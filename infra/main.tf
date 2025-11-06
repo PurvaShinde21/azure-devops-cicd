@@ -72,11 +72,11 @@ resource "azurerm_network_interface" "nic" {
 # Linux Virtual Machine
 # ------------------------------
 resource "azurerm_linux_virtual_machine" "vm" {
-  name                = "devops-vm"
-  resource_group_name = azurerm_resource_group.rg.name
-  location            = azurerm_resource_group.rg.location
-  size                = "Standard_B1s"
-  admin_username      = "azureuser"
+  name                            = "devops-vm"
+  resource_group_name             = azurerm_resource_group.rg.name
+  location                        = azurerm_resource_group.rg.location
+  size                            = "Standard_B1s"
+  admin_username                  = "azureuser"
   disable_password_authentication = true
 
   admin_ssh_key {
@@ -105,6 +105,48 @@ resource "azurerm_linux_virtual_machine" "vm" {
 # Output the public IP
 # ------------------------------
 output "vm_public_ip" {
-  value = azurerm_public_ip.pubip.ip_address
+  value       = azurerm_public_ip.pubip.ip_address
   description = "Public IP of the deployed VM"
+}
+# --- Network Security Group ---
+resource "azurerm_network_security_group" "nsg" {
+  name                = "devops-nsg"
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+}
+
+# Allow SSH
+resource "azurerm_network_security_rule" "ssh" {
+  name                        = "Allow-SSH"
+  priority                    = 1001
+  direction                   = "Inbound"
+  access                      = "Allow"
+  protocol                    = "Tcp"
+  source_port_range           = "*"
+  destination_port_range      = "22"
+  source_address_prefix       = "*"
+  destination_address_prefix  = "*"
+  network_security_group_name = azurerm_network_security_group.nsg.name
+  resource_group_name         = azurerm_resource_group.rg.name
+}
+
+# Allow HTTP
+resource "azurerm_network_security_rule" "http" {
+  name                        = "Allow-HTTP"
+  priority                    = 1002
+  direction                   = "Inbound"
+  access                      = "Allow"
+  protocol                    = "Tcp"
+  source_port_range           = "*"
+  destination_port_range      = "80"
+  source_address_prefix       = "*"
+  destination_address_prefix  = "*"
+  network_security_group_name = azurerm_network_security_group.nsg.name
+  resource_group_name         = azurerm_resource_group.rg.name
+}
+
+# Associate NSG with Subnet
+resource "azurerm_subnet_network_security_group_association" "subnet_nsg_assoc" {
+  subnet_id                 = azurerm_subnet.subnet.id
+  network_security_group_id = azurerm_network_security_group.nsg.id
 }
