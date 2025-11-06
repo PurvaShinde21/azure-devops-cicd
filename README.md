@@ -1,10 +1,10 @@
-# :octocat: Azure DevOps CI/CD — Terraform + GitHub Actions
+# Azure DevOps CI/CD — Terraform + GitHub Actions
 
-This project demonstrates **automated deployment** of a static website to an **Azure VM (Nginx)** using **Terraform** and **GitHub Actions**.
+ :octocat: This project demonstrates **automated deployment** of a static website to an **Azure VM (Nginx)** using **Terraform** and **GitHub Actions**.
 
 ---
 
-##Project Summary
+## Project Summary
 - **Infra Provisioning:** Terraform (`infra/main.tf`)
 - **Frontend Deployment:** Nginx static site (`app/`)
 - **CI/CD Automation:** GitHub Actions (`.github/workflows/deploy.yml`)
@@ -20,5 +20,4 @@ This project demonstrates **automated deployment** of a static website to an **A
 
 ## To Destroy Resources
 ```bash
-cd infra
-terraform destroy -auto-approve
+terraform destroy 
